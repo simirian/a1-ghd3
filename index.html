@@ -36,7 +36,7 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 </head>
-<body style="position: relative;">
+<body>
   <script>
     console.log("d3 version", d3.version); // test that d3 loaded
 
@@ -97,6 +97,7 @@
           .attr("d", area(data))
           .attr("fill", "#ff000040")
           .attr("stroke", "#f00")
+          .attr("stroke-width", 2)
           .on("mouseenter", e => {
             const count = data[x.invert(e.clientX).getFullYear() - xmin].count;
             marker.attr("visibility", "visible")
@@ -122,7 +123,7 @@
             .attr("cy", y(data[event.date - 1900].count))
             .attr("r", 5)
             .attr("stroke-width", 2)
-            .attr("fill", "#00f")
+            .attr("fill", "#55f")
             .attr("stroke", "#000")
             .on("mouseenter", e => tooltip(e.clientX, e.clientY, event.name))
             .on("mousemove", e => tooltip(e.clientX, e.clientY, event.name))
@@ -138,15 +139,16 @@
           .attr("width", 2)
           .attr("pointer-events", "none");
 
-      hover = d3.select("body").append("div")
+      hover = d3.select("#timeline").append("div")
           .style("pointer-events", "none")
           .style("position", "absolute")
           .style("background", "#fff")
           .style("border", "2px solid #000");
       
-      document.querySelector("body").appendChild(svg.node());
+      document.getElementById("timeline").appendChild(svg.node());
     }
     drawGraph();
   </script>
+  <div id="timeline" style="position: relative;"></div>
 </body>
 </html>
