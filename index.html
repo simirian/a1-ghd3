@@ -95,13 +95,12 @@
             .attr("ry", 10)
             .attr("stroke", "#000")
             .attr("stroke-width", 2)
-            .on("mouseenter", e => tooltip(e.clientX, e.clientY, era.name))
-            .on("mousemove", e => tooltip(e.clientX, e.clientY, era.name))
+            .on("mouseenter", e => tooltip(e.offsetX, e.offsetY, era.name))
+            .on("mousemove", e => tooltip(e.offsetX, e.offsetY, era.name))
             .on("mouseout", e => hideTooltip());
       }
 
       let marker;
-      let markerRect;
       const area = d3.area(d => x(new Date(d.year, 0)), y(0), d => y(d.count));
       svg.append("path")
           .attr("d", area(data))
@@ -109,17 +108,17 @@
           .attr("stroke", "#f00")
           .attr("stroke-width", 2)
           .on("mouseenter", e => {
-            const count = data[x.invert(e.clientX).getFullYear() - xmin].count;
+            const count = data[x.invert(e.offsetX).getFullYear() - xmin].count;
             marker.attr("visibility", "visible")
-                .attr("transform", `translate(${e.clientX}, ${y(count)})`)
+                .attr("transform", `translate(${e.offsetX}, ${y(count)})`)
                 .attr("height", y(0) - y(count));
-            tooltip(e.clientX, y(count), count);
+            tooltip(e.offsetX, y(count), count);
           })
           .on("mousemove", e => {
-            const count = data[x.invert(e.clientX).getFullYear() - xmin].count;
-            marker.attr("transform", `translate(${e.clientX}, ${y(count)})`)
+            const count = data[x.invert(e.offsetX).getFullYear() - xmin].count;
+            marker.attr("transform", `translate(${e.offsetX}, ${y(count)})`)
                 .attr("height", y(0) - y(count));
-            tooltip(e.clientX, y(count), count);
+            tooltip(e.offsetX, y(count), count);
           })
           .on("mouseout", e => {
             marker.attr("visibility", "hidden");
@@ -137,8 +136,8 @@
             .attr("stroke-width", 2)
             .attr("fill", "#55f")
             .attr("stroke", "#000")
-            .on("mouseenter", e => tooltip(e.clientX, e.clientY, event.name))
-            .on("mousemove", e => tooltip(e.clientX, e.clientY, event.name))
+            .on("mouseenter", e => tooltip(e.offsetX, e.offsetY, event.name))
+            .on("mousemove", e => tooltip(e.offsetX, e.offsetY, event.name))
             .on("mouseout", e => hideTooltip());
       }
 
@@ -147,11 +146,12 @@
           .call(d3.axisBottom(x).ticks(d3.timeYear.every(25)));
 
       marker = svg.append("rect")
-          .attr("visibility", "hidden")
           .attr("width", 2)
-          .attr("pointer-events", "none");
+          .attr("pointer-events", "none")
+          .attr("visibility", "hidden");
 
       hover = d3.select("#timeline").append("div")
+          .style("visibility", "hidden")
           .style("pointer-events", "none")
           .style("position", "absolute")
           .style("background", "#fff")
