@@ -12,26 +12,26 @@
   </style>
   <script id="events" type="application/json">
     [
-      {"name": "Wall Street Crash", "date": 1929},
-      {"name": "Pearl Harbor Bombing", "date": 1941},
-      {"name": "First Atomic Bombs Used", "date": 1945},
-      {"name": "Cuban Missile Crisis", "date": 1961},
-      {"name": "Moon Landing", "date": 1969},
-      {"name": "Black Monday", "date": 1987},
-      {"name": "Dot-com Collapse", "date": 2000},
-      {"name": "9/11", "date": 2001},
-      {"name": "Housing Collapse", "date": 2006},
-      {"name": "COVID-19", "date": 2019}
+      {"name": "Wall Street Crash", "date": 1929, "link": "https://en.wikipedia.org/wiki/Wall_Street_crash_of_1929"},
+      {"name": "Pearl Harbor Bombing", "date": 1941, "link": "https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor"},
+      {"name": "First Atomic Bombs Used", "date": 1945, "link": "https://en.wikipedia.org/wiki/Trinity_(nuclear_test)"},
+      {"name": "Cuban Missile Crisis", "date": 1961, "link": "https://en.wikipedia.org/wiki/Cuban_Missile_Crisis"},
+      {"name": "Moon Landing", "date": 1969, "link": "https://en.wikipedia.org/wiki/Moon_landing"},
+      {"name": "Black Monday", "date": 1987, "link": "https://en.wikipedia.org/wiki/Black_Monday"},
+      {"name": "Dot-com Collapse", "date": 2000, "link": "https://en.wikipedia.org/wiki/Dot-com_bubble"},
+      {"name": "9/11", "date": 2001, "link": "https://en.wikipedia.org/wiki/September_11_attacks"},
+      {"name": "Housing Collapse", "date": 2006, "link": "https://en.wikipedia.org/wiki/2000s_United_States_housing_bubble"},
+      {"name": "COVID-19", "date": 2019, "link": "https://en.wikipedia.org/wiki/COVID-19"}
     ]
   </script>
   <script id="eras", type="application/json">
     [
-      {"name": "Roaring 20s", "start": 1920, "end": 1930},
-      {"name": "WWII", "start": 1939, "end": 1945},
-      {"name": "Great Depression", "start": 1929, "end": 1939},
-      {"name": "Cold War", "start": 1945, "end": 1991},
-      {"name": "Civil Rights Movement", "start": 1954, "end": 1968},
-      {"name": "War on Terror", "start": 2001, "end": 2021}
+      {"name": "Roaring 20s", "start": 1920, "end": 1930, "link": "https://en.wikipedia.org/wiki/Roaring_Twenties"},
+      {"name": "WWII", "start": 1939, "end": 1945, "link": "https://en.wikipedia.org/wiki/World_War_II"},
+      {"name": "Great Depression", "start": 1929, "end": 1939, "link": "https://en.wikipedia.org/wiki/Great_Depression"},
+      {"name": "Cold War", "start": 1945, "end": 1991, "link": "https://en.wikipedia.org/wiki/Cold_War"},
+      {"name": "Civil Rights Movement", "start": 1954, "end": 1968, "link": "https://en.wikipedia.org/wiki/Civil_rights_movement"},
+      {"name": "War on Terror", "start": 2001, "end": 2021, "link": "https://en.wikipedia.org/wiki/War_on_terror"}
     ]
   </script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
@@ -75,7 +75,9 @@
       for (const era of eras) {
         const start = x(new Date(era.start, 0));
         const end = x(new Date(era.end, 0));
-        svg.append("rect")
+        svg.append("a")
+            .attr("href", era.link)
+          .append("rect")
             .attr("x", start)
             .attr("y", y(ymax))
             .attr("width", end - start)
@@ -118,7 +120,9 @@
 
       const events = JSON.parse(document.getElementById("events").innerText);
       for (const event of events) {
-        svg.append("circle")
+        svg.append("a")
+            .attr("href", event.link)
+          .append("circle")
             .attr("cx", x(new Date(event.date, 0)))
             .attr("cy", y(data[event.date - 1900].count))
             .attr("r", 5)
