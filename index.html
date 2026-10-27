@@ -34,10 +34,9 @@
       {"name": "War on Terror", "start": 2001, "end": 2021}
     ]
   </script>
-</head>
-<body>
-  <div id="container"></div>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body style="position: relative;">
   <script>
     console.log("d3 version", d3.version); // test that d3 loaded
 
@@ -46,7 +45,6 @@
       const data = [...Array(2026-1900).keys().map(e => {return {year: e + 1900, count: 0}})];
       for (const datum of csv)
         data[datum[1950] - 1900].count += +datum[135000];
-      console.log(data);
 
       const width = document.querySelector("body").offsetWidth;
       const height = 300;
@@ -61,6 +59,17 @@
           .attr("width", width)
           .attr("height", height);
 
+      let hover; // I hate that this binding works, but apparently this is a pointer
+      const tooltip = (x, y, text) => {
+        hover.style("visibility", "visible")
+            .style("left", x + "px")
+            .style("top", (y - hover.node().offsetHeight) + "px")
+            .text(text);
+      };
+      const hideTooltip = _ => {
+        hover.style("visibility", "hidden");
+      };
+
       const eras = JSON.parse(document.getElementById("eras").innerText);
       eras.sort((a, b) => (b.end - b.start) - (a.end - a.start));
       for (const era of eras) {
@@ -71,28 +80,39 @@
             .attr("y", y(ymax))
             .attr("width", end - start)
             .attr("height", y(0) - y(ymax))
-            .attr("fill", "#00000020");
+            .attr("fill", "#00000020")
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .attr("stroke", "#000")
+            .attr("stroke-width", 2)
+            .on("mouseenter", e => tooltip(e.clientX, e.clientY, era.name))
+            .on("mousemove", e => tooltip(e.clientX, e.clientY, era.name))
+            .on("mouseout", e => hideTooltip());
       }
 
-      let marker; // I hate that this binding works
+      let marker;
       let markerRect;
       const area = d3.area(d => x(new Date(d.year, 0)), y(0), d => y(d.count));
       svg.append("path")
           .attr("d", area(data))
           .attr("fill", "#ff000040")
+          .attr("stroke", "#f00")
           .on("mouseenter", e => {
             const count = data[x.invert(e.clientX).getFullYear() - xmin].count;
-            marker.attr("visibility", "visible");
-            marker.attr("transform", `translate(${e.clientX}, ${y(count)})`);
-            markerRect.attr("height", y(0) - y(count));
+            marker.attr("visibility", "visible")
+                .attr("transform", `translate(${e.clientX}, ${y(count)})`)
+                .attr("height", y(0) - y(count));
+            tooltip(e.clientX, y(count), count);
           })
           .on("mousemove", e => {
             const count = data[x.invert(e.clientX).getFullYear() - xmin].count;
-            marker.attr("transform", `translate(${e.clientX}, ${y(count)})`);
-            markerRect.attr("height", y(0) - y(count));
+            marker.attr("transform", `translate(${e.clientX}, ${y(count)})`)
+                .attr("height", y(0) - y(count));
+            tooltip(e.clientX, y(count), count);
           })
           .on("mouseout", e => {
             marker.attr("visibility", "hidden");
+            hideTooltip();
           });
 
       const events = JSON.parse(document.getElementById("events").innerText);
@@ -103,18 +123,26 @@
             .attr("r", 5)
             .attr("stroke-width", 2)
             .attr("fill", "#00f")
-            .attr("stroke", "#000");
+            .attr("stroke", "#000")
+            .on("mouseenter", e => tooltip(e.clientX, e.clientY, event.name))
+            .on("mousemove", e => tooltip(e.clientX, e.clientY, event.name))
+            .on("mouseout", e => hideTooltip());
       }
 
       svg.append("g")
           .attr("transform", "translate(0, " + (height - margin) + ")")
           .call(d3.axisBottom(x).ticks(d3.timeYear.every(25)));
 
-      marker = svg.append("g")
-          .attr("visibility", "hidden");
-      markerRect = marker.append("rect")
+      marker = svg.append("rect")
+          .attr("visibility", "hidden")
           .attr("width", 2)
           .attr("pointer-events", "none");
+
+      hover = d3.select("body").append("div")
+          .style("pointer-events", "none")
+          .style("position", "absolute")
+          .style("background", "#fff")
+          .style("border", "2px solid #000");
       
       document.querySelector("body").appendChild(svg.node());
     }
