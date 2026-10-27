@@ -160,6 +160,10 @@
       document.getElementById("timeline").appendChild(svg.node());
     }
     drawGraph();
+    window.addEventListener("resize", _ => {
+      document.getElementById("timeline").innerHTML = "";
+      drawGraph();
+    });
   </script>
   <div id="timeline"></div>
   <p>
