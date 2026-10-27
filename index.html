@@ -8,6 +8,13 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: sans-serif;
+    }
+    #timeline {
+      position: relative;
+    }
+    body {
+      padding: 1rem;
     }
   </style>
   <script id="events" type="application/json">
@@ -37,6 +44,7 @@
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 </head>
 <body>
+  <h1>Assignemnt 1</h1>
   <script>
     console.log("d3 version", d3.version); // test that d3 loaded
 
@@ -46,7 +54,7 @@
       for (const datum of csv)
         data[datum[1950] - 1900].count += +datum[135000];
 
-      const width = document.querySelector("body").offsetWidth;
+      const width = document.getElementById("timeline").offsetWidth;
       const height = 300;
       const margin = 30;
 
@@ -153,6 +161,11 @@
     }
     drawGraph();
   </script>
-  <div id="timeline" style="position: relative;"></div>
+  <div id="timeline"></div>
+  <p>
+    Timeline of United States History. Population shown in red, eras as
+    translucent rectangles, and events as blue dots. Hover over the graph to
+    learn about each feature, and click on them to learn more!
+  </p>
 </body>
 </html>
